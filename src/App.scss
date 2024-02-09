@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "./assets/css/poppins.css";
+@import "./assets/css/noto-sans-lao.css";
+@import "./assets/css/menu.css";
+
+.sidebar-active {
+  @apply text-gray-900 bg-primary-100 dark:bg-primary-700 dark:text-white;
+
+  svg {
+    @apply text-primary-500 dark:text-primary-400;
+  }
+
+  &:hover {
+    @apply bg-primary-100 dark:bg-primary-700;
+
+    svg {
+      @apply text-primary-900 dark:text-white;
+    }
+  }
+}
+
+.sidebar-inactive {
+  @apply text-gray-900 dark:text-white;
+
+  svg {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  &:hover {
+    @apply bg-gray-100 dark:bg-gray-700;
+
+    svg {
+      @apply text-gray-900 dark:text-white;
+    }
+  }
+}
+
+.sidebar-submenu-active {
+  @apply text-primary-600 dark:text-primary-100;
+
+  &:hover {
+    @apply bg-primary-100;
+  }
+}
