@@ -1,9 +1,12 @@
+import { JSXElement, createResource, createSignal } from "solid-js";
 import { Meta, StoryObj } from "storybook-solidjs";
 import Button from "../button/Button";
+import Dropdown from "../dropdown/Dropdown";
+import DotsHorizontalIcon from "../icons/DotsHorizontalIcon";
 import PlusIcon from "../icons/PlusIcon";
 import SearchIcon from "../icons/SearchIcon";
 import Table from "./Table";
-import { TableHeaderProps } from "./TableHeader";
+import {  ReturnTableState, TableDataParent, TableHeader } from "./Table.interface";
 
 const meta = {
   title: "Example/Table/Table",
@@ -15,40 +18,72 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-interface TableData {
+const fetchProduct = async (state: ReturnTableState): Promise<ProductData[]> => {
+  const url = new URL("https://65cd8575c715428e8b3e8964.mockapi.io/products");
+  url.searchParams.append("page", String(state.paginate.page));
+  url.searchParams.append("limit", String(state.paginate.limit));
+  if (state.order) {
+    url.searchParams.append("sortBy", state.order.key);
+    url.searchParams.append(
+      "order",
+      state.order.sortOrder ? state.order.sortOrder : "asc"
+    );
+  }
+
+  const response = await fetch(url, {
+    headers: { "content-type": "application/json" },
+  });
+
+  return await response.json();
+};
+
+interface ProductData extends TableDataParent {
   name: string;
   category: string;
   brand: string;
   description: string;
-  price: number;
+  price: JSXElement;
 }
 
 export const Default: Story = {
   render() {
-    const tableHeaders: TableHeaderProps[] = [
+    const tableHeaders: TableHeader[] = [
       { key: "name", label: "product name", ordered: true },
-      { key: "category", label: "Category", ordered: true },
-      { key: "brand", label: "Brand", ordered: true },
-      { key: "description", label: "Description", ordered: true },
-      { key: "price", label: "Price", ordered: true },
-      { key: "action", label: "action", action: true },
+      { key: "category", label: "category", ordered: true },
+      { key: "brand", label: "brand", ordered: true },
+      { key: "description", label: "description", ordered: true },
+      { key: "price", label: "price", ordered: true },
     ];
 
-    const tableData: TableData[] = [
-      {
-        name: "Apple iMac",
-        category: "PC",
-        brand: "Apple",
-        description: "300",
-        price: 2999,
-      },
-      {
-        name: "Apple iPhone 14",
-        category: "Phone",
-        brand: "Apple",
-        description: "1237",
-        price: 999,
-      },
+    const [state, setState] = createSignal<ReturnTableState>({
+      paginate: { page: 1, limit: 10 },
+    });
+
+    const [products] = createResource(state, fetchProduct);
+
+    const actionMenus = (id: string | number) => [
+      [
+        {
+          onClick() {
+            console.log("Edit: ", id);
+          },
+          label: "Edit",
+        },
+        {
+          onClick() {
+            console.log("Show: ", id);
+          },
+          label: "Show",
+        },
+      ],
+      [
+        {
+          onClick() {
+            console.log("Delete: ", id);
+          },
+          label: "Delete",
+        },
+      ],
     ];
 
     return (
@@ -76,16 +111,36 @@ export const Default: Story = {
                   </form>
                 </div>
                 <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                  <Button prefixIcon={PlusIcon}>Add product</Button>
+                  <Button prefixIcon={<PlusIcon />}>Add product</Button>
                 </div>
               </>
             }
             tableHeaders={tableHeaders}
-            onChange={(state) => {
-              console.log(state);
+            onChange={(tableState) => {
+              setState((prev) => ({
+                paginate: tableState.paginate,
+                order: tableState.order,
+              }));
+              console.log(state());
             }}
-            data={tableData}
-          ></Table>
+            data={products()}
+            paginate={{
+              page: 1,
+              limit: 10,
+              total: 100,
+            }}
+            isLoading={products.loading}
+            actionColumn={(id) => (
+              <Dropdown
+                triggerEl={
+                  <span class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100">
+                    <DotsHorizontalIcon class="w-5 h-5" />
+                  </span>
+                }
+                menus={actionMenus(id)}
+              />
+            )}
+          />
         </div>
       </section>
     );

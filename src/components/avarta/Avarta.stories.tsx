@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook-solidjs";
 
-import AngleDownIcon from "../icons/AngleDownIcon";
+import AngleDownIcon from "../icons/AngleIcon";
 import Avatar from "./Avatar";
 import "./Avatar.scss";
 

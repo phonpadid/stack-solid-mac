@@ -1,5 +1,4 @@
-import { JSX, ParentProps, Show } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { JSX, JSXElement, Show } from "solid-js";
 import LoadingIcon from "../icons/LoadingIcon";
 import "./Button.scss";
 
@@ -7,12 +6,8 @@ interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
   color?: "primary" | "secondary" | "danger";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  prefixIcon?: (
-    props: ParentProps<JSX.SvgSVGAttributes<SVGSVGElement>>
-  ) => JSX.Element;
-  subfixIcon?: (
-    props: ParentProps<JSX.SvgSVGAttributes<SVGSVGElement>>
-  ) => JSX.Element;
+  prefixIcon?: JSXElement;
+  subfixIcon?: JSXElement;
 }
 
 export default (props: ButtonProps) => {
@@ -26,7 +21,7 @@ export default (props: ButtonProps) => {
       } ${props.class} `}
     >
       <Show when={props.prefixIcon && !props.isLoading}>
-        <Dynamic component={props.prefixIcon} class="me-2" />
+        <span class="me-2">{props.prefixIcon}</span>
       </Show>
 
       <Show when={props.isLoading} fallback={props.children}>
@@ -37,7 +32,7 @@ export default (props: ButtonProps) => {
       </Show>
 
       <Show when={props.subfixIcon && !props.isLoading}>
-        <Dynamic component={props.subfixIcon} class="ms-2" />
+        <span class="ms-2">{props.subfixIcon}</span>
       </Show>
     </button>
   );

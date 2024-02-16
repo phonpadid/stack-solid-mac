@@ -1,9 +1,8 @@
-import { JSX, Match, ParentProps, Switch } from "solid-js";
+import { JSXElement, Match, ParentProps, Switch } from "solid-js";
 
 export interface TableBodyProps {
   isTh?: boolean;
-  data: string;
-  customData?: JSX.Element;
+  data: string | number | JSXElement;
 }
 
 export default (props: ParentProps<TableBodyProps>) => {
@@ -15,13 +14,12 @@ export default (props: ParentProps<TableBodyProps>) => {
             scope="row"
             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
           >
-            {props.customData ? props.customData : props.data}
+            {props.data}
           </th>
         </Match>
+
         <Match when={!props.isTh}>
-          <td class="px-4 py-3">
-            {props.customData ? props.customData : props.data}
-          </td>
+          <td class="px-4 py-3">{props.data}</td>
         </Match>
       </Switch>
     </>

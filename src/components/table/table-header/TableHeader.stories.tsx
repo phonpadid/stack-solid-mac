@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from "storybook-solidjs";
-import "./Table.scss";
 import TableHeader from "./TableHeader";
 
 const meta = {
@@ -58,7 +57,7 @@ export const WithAction: Story = {
               <tr>
                 <TableHeader key="name" label="Name" ordered />
                 <TableHeader key="age" label="age" ordered />
-                <TableHeader key="action" label="action" action />
+                <TableHeader key="action" label="action" />
               </tr>
             </thead>
           </table>

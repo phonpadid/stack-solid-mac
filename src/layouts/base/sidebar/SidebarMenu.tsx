@@ -1,7 +1,7 @@
 import { A, useLocation } from "@solidjs/router";
 import { For, JSX, ParentProps, createEffect, createMemo } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import AngleDownIcon from "../../../components/icons/AngleDownIcon";
+import AngleDownIcon from "../../../components/icons/AngleIcon";
 
 export default (
   props: ParentProps<{
