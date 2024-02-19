@@ -61,7 +61,11 @@ export default (
         <span class="flex-1 ml-3 text-left whitespace-nowrap">
           {props.label}
         </span>
-        <AngleDownIcon ref={angleIcon} class="w-6 h-6 transition " />
+        <AngleDownIcon
+          iconDirection="down"
+          ref={angleIcon}
+          class="w-6 h-6 transition "
+        />
       </button>
 
       <ul ref={dropdown} class="py-2 space-y-2 ">

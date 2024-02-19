@@ -11,7 +11,12 @@ export default function (props: AngleIconProps) {
       <svg
         {...props}
         xmlns="http://www.w3.org/2000/svg"
-        fill={`${props.iconDirection === 'line' ||props.iconDirection === 'download-line' ? "none" : "currentColor" }`}
+        fill={`${
+          props.iconDirection === "line" ||
+          props.iconDirection === "download-line"
+            ? "none"
+            : "currentColor"
+        }`}
         viewBox="0 0 24 24"
       >
         <Switch
