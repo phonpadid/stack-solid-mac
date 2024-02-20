@@ -1,6 +1,5 @@
 import { JSX, JSXElement, Show } from "solid-js";
 import LoadingIcon from "../icons/LoadingIcon";
-import "./Button.scss";
 
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;

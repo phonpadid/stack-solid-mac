@@ -1,13 +1,14 @@
-import { HashRouter } from "@solidjs/router";
-import 'flowbite';
+import { Router } from "@solidjs/router";
+import "flowbite";
 import { type Component } from "solid-js";
+import { MessageProvider } from "./contexts/message/MessageContext";
 import routes from "./router";
 
 const App: Component = () => {
   return (
-    <>
-      <HashRouter>{routes}</HashRouter>
-    </>
+    <MessageProvider>
+      <Router>{routes}</Router>
+    </MessageProvider>
   );
 };
 

@@ -2,7 +2,6 @@ import { Dialog, DialogRootProps } from "@ark-ui/solid";
 import { JSX, ParentProps, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import CloseIcon from "../icons/CloseIcon";
-import "./Modal.scss";
 
 interface DialogProps extends ParentProps<DialogRootProps> {
   header?: string;

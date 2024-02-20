@@ -1,7 +1,6 @@
 import { Pagination, PaginationRootProps } from "@ark-ui/solid";
 import { For, ParentProps } from "solid-js";
 import AngleIcon from "../icons/AngleIcon";
-import "./Pagination.scss";
 
 export default (props: ParentProps<PaginationRootProps>) => {
   return (

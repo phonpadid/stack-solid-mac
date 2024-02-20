@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from "storybook-solidjs";
-import Card from "../../card/Card";
 import CloseIcon from "../../icons/CloseIcon";
 import SearchIcon from "../../icons/SearchIcon";
 import InputText from "./InputText";
@@ -18,9 +17,7 @@ export const Default: Story = {
   render: () => {
     return (
       <div class="flex justify-center">
-        <Card class="w-2/4">
-          <InputText label="text" required placeholder="input text" />
-        </Card>
+        <InputText label="text" required placeholder="input text" />
       </div>
     );
   },
@@ -30,14 +27,12 @@ export const Invalid: Story = {
   render: () => {
     return (
       <div class="flex justify-center">
-        <Card class="w-2/4">
-          <InputText
-            label="text"
-            required
-            placeholder="input text"
-            error="some thing want wrong"
-          />
-        </Card>
+        <InputText
+          label="text"
+          required
+          placeholder="input text"
+          error="some thing want wrong"
+        />
       </div>
     );
   },
@@ -47,19 +42,17 @@ export const Icon: Story = {
   render: () => {
     return (
       <div class="flex justify-center">
-        <Card class="w-2/4">
-          <InputText
-            label="text"
-            required
-            placeholder="input text"
-            subfixIcon={
-              <CloseIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            }
-            prefixIcon={
-              <SearchIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            }
-          />
-        </Card>
+        <InputText
+          label="text"
+          required
+          placeholder="input text"
+          subfixIcon={
+            <CloseIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          }
+          prefixIcon={
+            <SearchIcon class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          }
+        />
       </div>
     );
   },

@@ -6,7 +6,6 @@ import { fadeIn, fadeOut } from "../../utils/transition-animation";
 import LoadingIcon from "../icons/LoadingIcon";
 import Pagination from "../pagination/Pagination";
 import { ReturnTableState, TableProps, TableState } from "./Table.interface";
-import "./Table.scss";
 import TablePlaceholder from "./TablePlaceholder";
 import TableBody from "./table-body/TableBody";
 import TableHeader, { TableHeaderProps } from "./table-header/TableHeader";

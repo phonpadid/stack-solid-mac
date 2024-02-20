@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from "storybook-solidjs";
-import Card from "../../card/Card";
 import PasswordInput from "./PasswordInput";
 
 const meta = {
@@ -16,13 +15,7 @@ export const Default: Story = {
   render: () => {
     return (
       <div class="flex justify-center">
-        <Card class="w-2/4">
-          <PasswordInput
-            label="password"
-            required
-            placeholder="enter password"
-          />
-        </Card>
+        <PasswordInput label="password" required placeholder="enter password" />
       </div>
     );
   },
@@ -32,14 +25,12 @@ export const Invalid: Story = {
   render: () => {
     return (
       <div class="flex justify-center">
-        <Card class="w-2/4">
-          <PasswordInput
-            label="password"
-            required
-            placeholder="enter password"
-            error="invalid format"
-          />
-        </Card>
+        <PasswordInput
+          label="password"
+          required
+          placeholder="enter password"
+          error="invalid format"
+        />
       </div>
     );
   },

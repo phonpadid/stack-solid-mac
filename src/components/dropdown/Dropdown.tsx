@@ -1,7 +1,6 @@
 import { Menu, MenuRootProps } from "@ark-ui/solid";
 import { For, JSXElement, ParentProps } from "solid-js";
 import { Portal } from "solid-js/web";
-import "./Dropdown.scss";
 
 interface DropdownProps extends ParentProps<MenuRootProps> {
   triggerEl: JSXElement;

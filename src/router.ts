@@ -1,5 +1,6 @@
 import { RouteDefinition } from "@solidjs/router";
 import { lazy } from "solid-js";
+import authenticationRoutes from "./pages/authentication/route";
 
 const routes: RouteDefinition[] = [
   {
@@ -16,6 +17,7 @@ const routes: RouteDefinition[] = [
       },
     ],
   },
+  ...authenticationRoutes,
 ];
 
 export default routes;
