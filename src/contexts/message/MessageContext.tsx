@@ -57,7 +57,7 @@ export const MessageProvider: ParentComponent = (props: ParentProps) => {
         onOpenChange={({ open }) => setState("isShowMessage", open)}
         close
       >
-        <div class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+        <div class=" p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
           {state.level ? (
             <Dynamic component={iconOptions[state.level]} />
           ) : undefined}

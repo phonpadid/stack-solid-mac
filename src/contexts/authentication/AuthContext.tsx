@@ -5,7 +5,7 @@ import {
   onMount,
   useContext,
 } from "solid-js";
-import { createStore } from "solid-js/store";
+import { SetStoreFunction, createStore } from "solid-js/store";
 import getAuthApi from "./get-auth.api";
 
 type AuthContextState = {
@@ -21,12 +21,18 @@ type AuthContextState = {
   loading: boolean;
 };
 
-type AuthContextValue = AuthContextState;
+type AuthContextValue = [
+  AuthContextState,
+  SetStoreFunction<AuthContextState> | undefined
+];
 
-const AuthContext = createContext<AuthContextValue>({
-  data: undefined,
-  loading: false,
-});
+const AuthContext = createContext<AuthContextValue>([
+  {
+    data: undefined,
+    loading: false,
+  },
+  undefined,
+]);
 
 export const AuthProvider: ParentComponent = (props: ParentProps) => {
   const [auth, setAuth] = createStore<AuthContextState>({
@@ -45,7 +51,9 @@ export const AuthProvider: ParentComponent = (props: ParentProps) => {
   });
 
   return (
-    <AuthContext.Provider value={auth}>{props.children}</AuthContext.Provider>
+    <AuthContext.Provider value={[auth, setAuth]}>
+      {props.children}
+    </AuthContext.Provider>
   );
 };
 

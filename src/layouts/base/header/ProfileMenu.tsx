@@ -1,11 +1,35 @@
 import { Menu } from "@ark-ui/solid";
+import { useNavigate } from "@solidjs/router";
 import { Show } from "solid-js";
 import Avatar from "../../../components/avatar/Avatar";
+import ArrowIcon from "../../../components/icons/ArrowIcon";
 import LoadingIcon from "../../../components/icons/LoadingIcon";
 import { useAuth } from "../../../contexts/authentication/AuthContext";
+import { useConfirm } from "../../../contexts/confirm/ConfirmContext";
 
 export default function () {
-  const auth = useAuth();
+  const [auth, setAuth] = useAuth();
+  const confirm = useConfirm();
+  const navigator = useNavigate();
+
+  function logout() {
+    confirm?.showConfirm(
+      "Are you sure you want to logout?",
+      {
+        async onConfirm() {
+          localStorage.removeItem("token");
+
+          if (setAuth) setAuth("data", undefined);
+
+          navigator("/login");
+        },
+      },
+      <ArrowIcon
+        iconDirection="right-bracket"
+        class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto"
+      />
+    );
+  }
 
   return (
     <Menu.Root>
@@ -61,6 +85,7 @@ export default function () {
                 <a
                   href="#"
                   class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  onClick={logout}
                 >
                   Sign out
                 </a>
