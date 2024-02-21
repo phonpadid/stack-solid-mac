@@ -17,7 +17,9 @@ export default (props: RouteSectionProps) => {
         <div class="antialiased bg-gray-50 dark:bg-gray-900">
           <Topbar />
           <Sidebar />
-          <main class="p-4 md:ml-64 h-auto pt-20">{props.children}</main>;
+          <main class="p-4 md:ml-64 h-auto min-h-screen pt-20">
+            {props.children}
+          </main>
         </div>
       </AuthProvider>
     </AxiosProvider>

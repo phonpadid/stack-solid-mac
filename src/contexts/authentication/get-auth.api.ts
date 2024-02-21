@@ -9,6 +9,7 @@ export default async () => {
     id: number;
     username: string;
     email: string;
+    phone: string;
     firstName: string;
     lastName: string;
     gender: string;

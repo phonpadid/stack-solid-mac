@@ -1,13 +1,16 @@
 import { A, useLocation } from "@solidjs/router";
-import { For, JSX, ParentProps, createEffect, createMemo } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import {
+  For,
+  JSXElement,
+  ParentProps,
+  createEffect,
+  createMemo,
+} from "solid-js";
 import AngleDownIcon from "../../../components/icons/AngleIcon";
 
 export default (
   props: ParentProps<{
-    icon: (
-      props: ParentProps<JSX.SvgSVGAttributes<SVGSVGElement>>
-    ) => JSX.Element;
+    icon: JSXElement;
     label: string;
     menus: { href: string; label: string }[];
     isOpen: boolean;
@@ -54,10 +57,7 @@ export default (
           props.onChange();
         }}
       >
-        <Dynamic
-          component={props.icon}
-          class="flex-shrink-0 w-6 h-6 transition"
-        />
+        <span class="flex-shrink-0 w-6 h-6 transition">{props.icon}</span>
         <span class="flex-1 ml-3 text-left whitespace-nowrap">
           {props.label}
         </span>

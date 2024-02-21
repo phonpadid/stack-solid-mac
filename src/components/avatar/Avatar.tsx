@@ -8,12 +8,13 @@ type AvatarProps = ParentProps<{
   src?: string;
   alt: string;
   isLoading?: boolean;
+  class?: string;
 }>;
 
 export default (props: AvatarProps) => {
   return (
     <div
-      class="relative overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600"
+      class={`relative overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 ${props.class}`}
       classList={{
         "w-6 h-6": props.size === "xs",
         "w-8 h-8": props.size === "sm",
