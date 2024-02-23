@@ -28,7 +28,7 @@ export default function () {
         label: "Users",
         subMenus: {
           menus: [
-            { href: "/users", label: "User" },
+            { href: "/users/list", label: "User" },
             { href: "/users/roles", label: "Role" },
             { href: "/users/permissions", label: "Permission" },
           ],
@@ -83,6 +83,7 @@ export default function () {
 
                 <Match when={subMenus}>
                   <SidebarMenu
+                    path={href}
                     menus={(subMenus as SidebarSubMenuType).menus}
                     isOpen={(subMenus as SidebarSubMenuType).isOpen}
                     icon={icon}

@@ -1,202 +1,151 @@
 import { Pagination } from "@ark-ui/solid";
-import { For, ParentProps, Show, onMount } from "solid-js";
+import { ErrorBoundary, For, Show, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
+import { Dynamic } from "solid-js/web";
 import { Transition } from "solid-transition-group";
 import { fadeIn, fadeOut } from "../../utils/transition-animation";
+import Select from "../forms/select/Select";
 import LoadingIcon from "../icons/LoadingIcon";
 import { TableProps, TableState } from "./Table.interface";
 import TablePlaceholder from "./TablePlaceholder";
-import TableBody from "./table-body/TableBody";
-import TableHeader, { TableHeaderProps } from "./table-header/TableHeader";
+import Column from "./column/Column";
 
-export default (props: ParentProps<TableProps>) => {
-  let tableRow: HTMLTableRowElement | undefined;
-
-  const [table, setTable] = createStore<{
-    state: TableState;
-  }>({
-    state: {
-      paginate: props.paginate,
-      order: undefined,
-    },
+export default (props: TableProps) => {
+  const [table, setTable] = createStore<TableState>({
+    paginate: { offset: 0, limit: 10 },
   });
 
-  const [orderHeader, setOrderHeader] = createStore<{
-    orders: TableHeaderProps[];
-  }>({
-    orders: props.tableHeaders.map((value) => ({
-      ...value,
-      sortOrder: undefined,
-    })),
-  });
-
-  onMount(() => {
-    const emptyRows = document.getElementById("empty-row");
-
-    if (emptyRows) {
-      emptyRows.style.height = `${
-        54 * props.paginate.limit - (props.data ? props.data.length : 0)
-      }px`;
-    }
+  createEffect(() => {
+    table.paginate.limit;
+    table.paginate.offset;
+    props.onChange(table);
   });
 
   return (
-    <div class="table-main">
-      <Show when={props.header}>
-        {(header) => <div class="table-header">{header()}</div>}
-      </Show>
+    <ErrorBoundary fallback={(err, reset) => <>{JSON.stringify(err)}</>}>
+      <div class="table-main">
+        <Show when={props.header}>
+          {(header) => <div class="table-header">{header()}</div>}
+        </Show>
 
-      <div class="table-container">
-        <TablePlaceholder />
+        <div class="table-container">
+          <TablePlaceholder />
 
-        <table class="table-content">
-          <thead class="table-thead">
-            <tr>
-              <For each={orderHeader.orders}>
-                {(column, idx) => (
-                  <TableHeader
-                    {...column}
-                    onSort={(sort) => {
-                      setOrderHeader("orders", idx(), "sortOrder", (prev) => {
-                        if (prev === "asc") {
-                          return "desc";
-                        } else if (prev === "desc") {
-                          return undefined;
-                        } else {
-                          return "asc";
-                        }
-                      });
-
-                      setOrderHeader(
-                        "orders",
-                        orderHeader.orders
-                          .map((val, index) => index)
-                          .filter((val) => val !== idx()),
-                        (prev) => ({
-                          ...prev,
-                          sortOrder: undefined,
-                        })
-                      );
-
-                      setTable("state", (prev) => ({
-                        paginate: prev.paginate,
-                        order: orderHeader.orders[idx()].sortOrder
-                          ? {
-                              key: column.key,
-                              sortOrder: orderHeader.orders[idx()].sortOrder,
-                            }
-                          : undefined,
-                      }));
-
-                      if (props.onChange) props.onChange(table.state);
-                    }}
-                  />
-                )}
-              </For>
-
-              <Show when={props.actionColumn}>
-                <th scope="col" class="px-4 py-3">
-                  <span class="sr-only">Actions</span>
-                </th>
-              </Show>
-            </tr>
-          </thead>
-
-          <tbody>
-            <For each={props.data}>
-              {(record) => (
-                <Show when={record} fallback={<tr class="empty-row"></tr>}>
-                  {(data) => (
-                    <tr class="table-tbody" ref={tableRow}>
-                      <For each={orderHeader.orders}>
-                        {(column, headerIdx) => (
-                          <TableBody
-                            data={data()[column.key]}
-                            isTh={headerIdx() === 0}
-                          />
-                        )}
-                      </For>
-
-                      <Show when={props.actionColumn}>
-                        {(action) => (
-                          <td class="px-4 py-3">{action()(data().id)}</td>
-                        )}
-                      </Show>
-                    </tr>
+          <table class="table-content">
+            <thead class="table-thead">
+              <tr>
+                <For each={props.children}>
+                  {(childProps) => (
+                    <Dynamic component={Column} {...childProps} />
                   )}
-                </Show>
-              )}
-            </For>
+                </For>
+              </tr>
+            </thead>
 
-            <Show when={(props.data ? props.data.length : 0) < 10}>
-              <tr id="empty-row"></tr>
-            </Show>
-          </tbody>
-
-          <Transition onEnter={fadeIn} onExit={fadeOut}>
-            <Show when={props.isLoading}>
-              <div
-                class={`absolute z-20 top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center`}
+            <tbody>
+              <Show
+                when={props.value()}
+                fallback={<tr style={{ height: "540px" }}></tr>}
               >
-                <div>
-                  <LoadingIcon class="animate-spin w-8 h-8" />
-                </div>
-              </div>
-            </Show>
-          </Transition>
-        </table>
-      </div>
+                {(value) => (
+                  <Show
+                    when={value().data[props.responseField].length > 0}
+                    fallback={<tr id="empty-row"></tr>}
+                  >
+                    <For each={value().data[props.responseField]}>
+                      {(value) => (
+                        <tr class="table-tbody">
+                          <For each={props.children}>
+                            {(childProps) => (
+                              <td class="px-4 py-3">
+                                {childProps.body
+                                  ? childProps.body(value)
+                                  : undefined}
+                              </td>
+                            )}
+                          </For>
+                        </tr>
+                      )}
+                    </For>
+                  </Show>
+                )}
+              </Show>
+            </tbody>
+          </table>
+        </div>
 
-      <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4">
-        <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-          Showing{" "}
-          <span class="font-semibold text-gray-900 dark:text-white">
-            {table.state.paginate.offset + 1}-
-            {props.total
-              ? Math.min(
-                  table.state.paginate.offset + table.state.paginate.limit,
-                  props.total
-                )
-              : ""}{" "}
-          </span>
-          of{" "}
-          <span class="font-semibold text-gray-900 dark:text-white">
-            {props.total}
-          </span>
-        </span>
-
-        <Show when={props.total}>
-          {(total) => (
-            <Pagination.Root
-              class="inline-flex -space-x-px text-sm"
-              count={total()}
-              pageSize={table.state.paginate.limit}
-              onPageChange={(details) => {
-                setTable("state", (prev) => ({
-                  ...prev,
-                  paginate: {
-                    offset: (details.page - 1) * details.pageSize,
-                    limit: details.pageSize,
-                  },
-                }));
-
-                if (props.onChange) props.onChange(table.state);
-              }}
+        <Transition onEnter={fadeIn} onExit={fadeOut}>
+          <Show when={props.value.loading}>
+            <div
+              class={`absolute z-10 top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center`}
             >
-              {() => (
-                <>
-                  <Pagination.PrevTrigger class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Previous
-                  </Pagination.PrevTrigger>
-                  <Pagination.NextTrigger class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Next
-                  </Pagination.NextTrigger>
-                </>
-              )}
-            </Pagination.Root>
+              <div>
+                <LoadingIcon class="animate-spin w-8 h-8" />
+              </div>
+            </div>
+          </Show>
+        </Transition>
+
+        <Show when={props.value()}>
+          {(value) => (
+            <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4">
+              <span class="text-sm font-normal text-gray-500 dark:text-gray-400 flex items-center gap-x-1">
+                Rows per page
+                <Select
+                  class="w-fit"
+                  items={[
+                    { label: "10", value: "10" },
+                    { label: "25", value: "25" },
+                    { label: "50", value: "50" },
+                    { label: "100", value: "100" },
+                  ]}
+                  value={["10"]}
+                  size="sm"
+                  contentClass="w-fit"
+                  onValueChange={({ value }) => {
+                    setTable("paginate", (prev) => ({
+                      ...prev,
+                      limit: Number(value[0]),
+                    }));
+                  }}
+                />
+                <span class="font-semibold text-gray-900 dark:text-white">
+                  {table.paginate.offset + 1}-
+                  {value().data.total
+                    ? Math.min(
+                        table.paginate.offset + table.paginate.limit,
+                        value().data.total
+                      )
+                    : ""}
+                </span>
+                of
+                <span class="font-semibold text-gray-900 dark:text-white">
+                  {value().data.total}
+                </span>
+              </span>
+
+              <Pagination.Root
+                class="inline-flex -space-x-px text-sm"
+                count={value().data.total}
+                pageSize={table.paginate.limit}
+                onPageChange={({ pageSize, page }) => {
+                  setTable("paginate", () => ({
+                    offset: (page - 1) * pageSize,
+                    limit: pageSize,
+                  }));
+                }}
+              >
+                <Pagination.PrevTrigger class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                  Previous
+                </Pagination.PrevTrigger>
+                <Pagination.NextTrigger class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                  Next
+                </Pagination.NextTrigger>
+              </Pagination.Root>
+            </nav>
           )}
         </Show>
-      </nav>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 };

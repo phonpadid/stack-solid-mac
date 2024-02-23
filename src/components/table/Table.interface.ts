@@ -1,24 +1,18 @@
-import { JSXElement } from "solid-js";
-import { HeaderState, TableHeaderProps } from "./table-header/TableHeader";
+import { AxiosResponse } from "axios";
+import { JSXElement, Resource } from "solid-js";
+import { IPaginated } from "../../common/interface/pagination";
+import { ColumnPropsType } from "./column/Column.interface";
 
-export interface TableDataParent {
-  id: string | number;
-}
+type Res = Record<string, any> & IPaginated;
 
-export interface TableHeader extends Omit<TableHeaderProps, "sortOrder"> {}
-
-export interface TableProps {
+export type TableProps = {
   header?: JSXElement;
-  tableHeaders: TableHeader[];
-  data?: TableDataParent[];
-  total?: number;
-  paginate: { limit: number; offset: number };
-  actionColumn?: (key: string | number) => JSXElement;
-  onChange?: (state: TableState) => void;
-  isLoading?: boolean;
-}
+  children: ColumnPropsType[];
+  value: Resource<AxiosResponse<Res, any>>;
+  responseField: string;
+  onChange: (state: TableState) => void;
+};
 
 export interface TableState {
-  order?: HeaderState;
   paginate: { offset: number; limit: number };
 }

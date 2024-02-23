@@ -7,8 +7,20 @@ const userRoutes: RouteDefinition[] = [
     component: lazy(() => import("./Users")),
     children: [
       {
-        path: "/",
+        path: "/list",
         component: lazy(() => import("./user/User")),
+      },
+      {
+        path: "/create",
+        component: lazy(() => import("./user/CreateUser")),
+      },
+      {
+        path: "/edit/:id",
+        component: lazy(() => import("./user/EditUser")),
+      },
+      {
+        path: "/detail/:id",
+        component: lazy(() => import("./user/DetailUser")),
       },
       {
         path: "/roles",

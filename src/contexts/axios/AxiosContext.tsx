@@ -24,13 +24,19 @@ export const AxiosProvider: ParentComponent = (props: ParentProps) => {
 
   axios.interceptors.response.use(
     (res) => res,
-    (err) => {
-      if (err instanceof AxiosError && err.response) {
+    (err: AxiosError<{ message: string; errors: string[] }>) => {
+      if (err.response) {
         if (err.response.status >= 400 && err.response.status < 500) {
           if (err.response.status === 401) navigator("/login");
-          actions.showMessage({ level: "warning", message: err.message });
+          actions.showMessage({
+            level: "warning",
+            message: err.response.data.message,
+          });
         } else if (err.response.status >= 500) {
-          actions.showMessage({ level: "danger", message: err.message });
+          actions.showMessage({
+            level: "danger",
+            message: err.response.data.message,
+          });
         }
       }
     }

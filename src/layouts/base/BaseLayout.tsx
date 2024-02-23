@@ -18,7 +18,7 @@ export default (props: RouteSectionProps) => {
           <Topbar />
           <Sidebar />
           <main class="p-4 md:ml-64 h-auto min-h-screen pt-20">
-            {props.children}
+            <div class="mx-auto max-w-7xl">{props.children}</div>
           </main>
         </div>
       </AuthProvider>

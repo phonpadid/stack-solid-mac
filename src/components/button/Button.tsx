@@ -7,6 +7,7 @@ interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   prefixIcon?: JSXElement;
   subfixIcon?: JSXElement;
+  outlined?: boolean;
 }
 
 export default (props: ButtonProps) => {
@@ -15,12 +16,12 @@ export default (props: ButtonProps) => {
       {...props}
       disabled={props.disabled || props.isLoading}
       type={props.type}
-      class={`button button-${props.color || "primary"} button-${
-        props.size || "md"
-      } ${props.class} `}
+      class={`button button-${props.color || "primary"}${
+        props.outlined ? "-outline" : ""
+      } button-${props.size || "md"} ${props.class} `}
     >
       <Show when={props.prefixIcon && !props.isLoading}>
-        <span class="me-2">{props.prefixIcon}</span>
+        <span class="me-1">{props.prefixIcon}</span>
       </Show>
 
       <Show when={props.isLoading} fallback={props.children}>
@@ -31,7 +32,7 @@ export default (props: ButtonProps) => {
       </Show>
 
       <Show when={props.subfixIcon && !props.isLoading}>
-        <span class="ms-2">{props.subfixIcon}</span>
+        <span class="ms-1">{props.subfixIcon}</span>
       </Show>
     </button>
   );

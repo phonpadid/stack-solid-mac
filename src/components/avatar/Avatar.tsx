@@ -1,5 +1,6 @@
 import { ParentProps, Show } from "solid-js";
 import { Transition } from "solid-transition-group";
+import profilePlaceholder from "../../assets/profile-placeholder.webp";
 import { fadeIn, fadeOut } from "../../utils/transition-animation";
 import LoadingIcon from "../icons/LoadingIcon";
 
@@ -23,45 +24,18 @@ export default (props: AvatarProps) => {
         "w-36 h-36": props.size === "xl",
       }}
     >
-      <Show
-        when={props.src}
-        fallback={
-          <svg
-            class="absolute text-gray-400 -left-1"
-            classList={{
-              "w-8 h-8": props.size === "xs",
-              "w-10 h-10": props.size === "sm",
-              "w-12 h-12": props.size === "md",
-              "w-[5.5rem] h-[5.5rem]": props.size === "lg",
-              "w-[9.5rem] h-[9.5rem]": props.size === "xl",
-            }}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-        }
-      >
-        {(src) => (
-          <img
-            class="rounded-full"
-            classList={{
-              "w-6 h-6": props.size === "xs",
-              "w-8 h-8": props.size === "sm",
-              "w-10 h-10": props.size === "md",
-              "w-20 h-20": props.size === "lg",
-              "w-36 h-36": props.size === "xl",
-            }}
-            src={src()}
-            alt={props.alt}
-          />
-        )}
-      </Show>
+      <img
+        class="rounded-full object-cover"
+        classList={{
+          "w-6 h-6": props.size === "xs",
+          "w-8 h-8": props.size === "sm",
+          "w-10 h-10": props.size === "md",
+          "w-20 h-20": props.size === "lg",
+          "w-36 h-36": props.size === "xl",
+        }}
+        src={props.src ? props.src : profilePlaceholder}
+        alt={props.alt}
+      />
 
       <Transition onEnter={fadeIn} onExit={fadeOut}>
         <Show when={props.isLoading}>

@@ -40,7 +40,7 @@ export default (props: TextInputProps) => {
           value={props.value || ""}
           aria-invalid={!!props.error}
           aria-errormessage={`${props.name}-error`}
-          class={`sm:text-sm rounded-lg block w-full p-2.5 ${
+          class={`text-sm rounded-lg block w-full p-2.5 ${
             props.error
               ? "bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
               : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"

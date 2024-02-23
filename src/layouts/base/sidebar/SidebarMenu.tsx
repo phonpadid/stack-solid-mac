@@ -12,6 +12,7 @@ export default (
   props: ParentProps<{
     icon: JSXElement;
     label: string;
+    path: string;
     menus: { href: string; label: string }[];
     isOpen: boolean;
     onChange: () => void;
@@ -46,12 +47,8 @@ export default (
         type="button"
         class="flex items-center p-2 w-full text-base font-medium rounded-lg transition "
         classList={{
-          "sidebar-active": props.menus
-            .map(({ href }) => href)
-            .includes(pathname()),
-          "sidebar-inactive": !props.menus
-            .map(({ href }) => href)
-            .includes(pathname()),
+          "sidebar-active": pathname().startsWith(props.path),
+          "sidebar-inactive": !pathname().startsWith(props.path),
         }}
         onClick={() => {
           props.onChange();

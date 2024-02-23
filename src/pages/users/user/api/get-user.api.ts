@@ -1,11 +1,10 @@
-import { IOffsetBasePaginate } from "../../../../common/interface/pagination";
 import { useAxios } from "../../../../contexts/axios/AxiosContext";
-import { UsersResponse } from "./response.interface";
+import { UserTableState, UsersResponse } from "./user.interface";
 
-export default async (state: IOffsetBasePaginate) => {
+export default async (state: UserTableState) => {
   const { axios } = useAxios();
 
-  return axios.get<UsersResponse>("/users", {
-    params: { limit: state.limit, skip: state.offset },
+  return axios.get<UsersResponse>("/users/search", {
+    params: { limit: state.limit, skip: state.offset, q: state.search },
   });
 };
