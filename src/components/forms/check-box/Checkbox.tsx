@@ -44,6 +44,7 @@ export default (props: CheckboxProps) => {
           >
             {props.label}
           </label>
+          
           <Show when={props.error}>
             <p class="text-xs font-normal text-red-400 dark:text-red-500">
               {props.error}

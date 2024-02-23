@@ -3,8 +3,7 @@ import { Index, Portal, Show } from "solid-js/web";
 import AngleIcon from "../../icons/AngleIcon";
 import "./Select.scss";
 
-interface Props
-  extends SelectRootProps<{ label: string; value: string | boolean }> {
+interface Props extends SelectRootProps<{ label: string; value: string }> {
   placeholder?: string;
   label?: string;
   size?: "sm" | "md" | "lg";
@@ -54,7 +53,7 @@ export default (props: Props) => {
       <Portal>
         <Select.Positioner>
           <Select.Content
-            class={`z-10 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 ${props.contentClass}`}
+            class={`z-20 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 ${props.contentClass}`}
           >
             <div class="py-2 text-sm text-gray-700 dark:text-gray-200">
               <Index each={props.items}>

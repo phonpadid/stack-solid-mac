@@ -16,7 +16,7 @@
   @apply text-gray-900 bg-primary-100 dark:bg-primary-700 dark:text-white;
 
   svg {
-    @apply text-primary-500 dark:text-primary-400;
+    @apply text-primary-700 dark:text-primary-400;
   }
 
   &:hover {
@@ -45,7 +45,7 @@
 }
 
 .sidebar-submenu-active {
-  @apply text-primary-600 dark:text-primary-100;
+  @apply text-primary-700 dark:text-primary-100;
 
   &:hover {
     @apply bg-primary-100;

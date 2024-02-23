@@ -24,9 +24,7 @@ export default (props: TableProps) => {
   return (
     <ErrorBoundary fallback={(err, reset) => <>{JSON.stringify(err)}</>}>
       <div class="table-main">
-        <Show when={props.header}>
-          {(header) => <div class="table-header">{header()}</div>}
-        </Show>
+        <Show when={props.header}>{(header) => header()}</Show>
 
         <div class="table-container">
           <TablePlaceholder />

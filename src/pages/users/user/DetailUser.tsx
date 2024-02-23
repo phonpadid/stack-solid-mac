@@ -58,6 +58,7 @@ export default () => {
 
       <div class="p-4 flex items-center">
         <Button
+          class="mr-3"
           color="primary"
           prefixIcon={<EditIcon />}
           onClick={() => {

@@ -61,23 +61,10 @@ export default () => {
     <Table
       header={
         <>
-          <div class="w-full md:w-1/2">
-            <InputText
-              onInput={(e) => {
-                clearTimeout(typingTimeout);
-
-                typingTimeout = setTimeout(function () {
-                  setState((prev) => ({ ...prev, search: e.target.value }));
-                }, 500);
-              }}
-              placeholder="Search"
-              prefixIcon={
-                <SearchIcon class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              }
-            />
-          </div>
-          <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+          <div class="flex flex-col items-start justify-between border-b p-4 sm:flex-row sm:items-center">
+            <h5 class="font-semibold mb-2 sm:mb-0">All users</h5>
             <Button
+              class="w-full sm:w-fit"
               prefixIcon={<PlusIcon class="h-3.5 w-3.5" />}
               onClick={() => {
                 navigate("/users/create");
@@ -85,6 +72,23 @@ export default () => {
             >
               Add user
             </Button>
+          </div>
+          <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+            <div class="w-full md:w-1/2">
+              <InputText
+                onInput={(e) => {
+                  clearTimeout(typingTimeout);
+
+                  typingTimeout = setTimeout(function () {
+                    setState((prev) => ({ ...prev, search: e.target.value }));
+                  }, 500);
+                }}
+                placeholder="Search"
+                prefixIcon={
+                  <SearchIcon class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                }
+              />
+            </div>
           </div>
         </>
       }
@@ -101,7 +105,6 @@ export default () => {
       {[
         {
           header: "user",
-          field: "user",
           body: ({ image, firstName, lastName }: UserResponse) => (
             <div class="flex items-center">
               <Avatar src={image} alt="image" size="sm" class="mr-3" />
@@ -113,7 +116,6 @@ export default () => {
         },
         {
           header: "role",
-          field: "role",
           body: () => (
             <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
               admin
@@ -122,7 +124,6 @@ export default () => {
         },
         {
           header: "status",
-          field: "status",
           body: () => (
             <div class="flex items-center">
               <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
@@ -132,7 +133,6 @@ export default () => {
         },
         {
           header: "last login",
-          field: "lastLogin",
           body: () => new Date().toDateString(),
         },
         {
