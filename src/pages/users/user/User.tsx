@@ -32,27 +32,27 @@ export default () => {
         onClick() {
           navigate(`/users/edit/${id}`);
         },
-        label: "Edit",
+        label: "ແກ້ໄຂ",
       },
       {
         onClick() {
           navigate(`/users/detail/${id}`);
         },
-        label: "Show",
+        label: "ລາຍລະອຽດ",
       },
     ],
     [
       {
         onClick() {
           confirm?.showConfirm(
-            "Are you sure you want to delete this item?",
+            "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
             {
               onConfirm: async () => {},
             },
             <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
           );
         },
-        label: "Delete",
+        label: "ລຶບ",
       },
     ],
   ];
@@ -61,8 +61,10 @@ export default () => {
     <Table
       header={
         <>
-          <div class="flex flex-col items-start justify-between border-b p-4 sm:flex-row sm:items-center">
-            <h5 class="font-semibold mb-2 sm:mb-0">All users</h5>
+          <div class="flex flex-col items-start justify-between border-b dark:border-gray-600 p-4 sm:flex-row sm:items-center">
+            <h2 class="text-lg font-semibold mb-2 sm:mb-0 dark:text-white">
+              ຜູ້ໃຊ້ທັງໝົດ
+            </h2>
             <Button
               class="w-full sm:w-fit"
               prefixIcon={<PlusIcon class="h-3.5 w-3.5" />}
@@ -70,7 +72,7 @@ export default () => {
                 navigate("/users/create");
               }}
             >
-              Add user
+              ເພີ່ມຜູ້ໃຊ້
             </Button>
           </div>
           <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
@@ -83,7 +85,7 @@ export default () => {
                     setState((prev) => ({ ...prev, search: e.target.value }));
                   }, 500);
                 }}
-                placeholder="Search"
+                placeholder="ຄົ້ນຫາ"
                 prefixIcon={
                   <SearchIcon class="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 }
@@ -104,7 +106,7 @@ export default () => {
     >
       {[
         {
-          header: "user",
+          header: "ຜູ້ໃຊ້",
           body: ({ image, firstName, lastName }: UserResponse) => (
             <div class="flex items-center">
               <Avatar src={image} alt="image" size="sm" class="mr-3" />
@@ -115,7 +117,7 @@ export default () => {
           ),
         },
         {
-          header: "role",
+          header: "ບົດບາດ",
           body: () => (
             <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
               admin
@@ -123,7 +125,7 @@ export default () => {
           ),
         },
         {
-          header: "status",
+          header: "ສະຖານະ",
           body: () => (
             <div class="flex items-center">
               <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
@@ -132,7 +134,7 @@ export default () => {
           ),
         },
         {
-          header: "last login",
+          header: "ເຂົ້າລະບົບລ່າສຸດ",
           body: () => new Date().toDateString(),
         },
         {

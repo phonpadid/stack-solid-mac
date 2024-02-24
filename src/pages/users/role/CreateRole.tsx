@@ -21,18 +21,18 @@ export default () => {
   return (
     <Form onSubmit={handleSubmit}>
       <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
-        Add new role
+        ເພີ່ມບົດບາດໃຫມ່
       </h2>
       <div class="grid gap-4 mb-4">
         <Field name="name">
           {(field, props) => (
             <InputText
               required
-              label="Name"
+              label="ຊື່"
               {...props}
               value={field.value}
               error={field.error}
-              placeholder="Name"
+              placeholder="ຊື່"
             />
           )}
         </Field>
@@ -41,18 +41,18 @@ export default () => {
           {(field, props) => (
             <Textarea
               required
-              label="Description"
+              label="ຄຳອະທິບາຍ"
               {...props}
               value={field.value}
               error={field.error}
-              placeholder="Write a Description..."
+              placeholder="ຂຽນຄໍາອະທິບາຍ..."
             />
           )}
         </Field>
 
         <div>
           <label class={`mb-2 font-semibold text-gray-900 dark:text-white`}>
-            Permissions
+            ການອະນຸຍາດ
           </label>
           <div class="flex flex-wrap gap-3">
             <Field name="permissions" type="string[]">
@@ -105,7 +105,9 @@ export default () => {
         </div>
       </div>
 
-      <Button type="submit">Add role</Button>
+      <Button type="submit" isLoading={userForm.submitting}>
+        ເພີ່ມບົດບາດ
+      </Button>
     </Form>
   );
 };

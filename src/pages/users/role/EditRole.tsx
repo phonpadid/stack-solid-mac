@@ -55,18 +55,18 @@ export default () => {
   return (
     <Form onSubmit={handleSubmit} class="relative">
       <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
-        Update role
+        ອັບເດດບົດບາດ
       </h2>
       <div class="grid gap-4 mb-4">
         <Field name="name">
           {(field, props) => (
             <InputText
               required
-              label="Name"
+              label="ຊື່"
               {...props}
               value={field.value}
               error={field.error}
-              placeholder="Name"
+              placeholder="ຊື່"
             />
           )}
         </Field>
@@ -75,18 +75,18 @@ export default () => {
           {(field, props) => (
             <Textarea
               required
-              label="Description"
+              label="ຄຳອະທິບາຍ"
               {...props}
               value={field.value}
               error={field.error}
-              placeholder="Write a Description..."
+              placeholder="ຂຽນຄຳອະທິບາຍ..."
             />
           )}
         </Field>
 
         <div>
           <label class={`mb-2 font-semibold text-gray-900 dark:text-white`}>
-            Permissions
+            ການອະນຸຍາດ
           </label>
           <div class="flex flex-wrap gap-3">
             <Field name="permissions" type="string[]">
@@ -141,7 +141,7 @@ export default () => {
 
       <div class="flex items-center">
         <Button type="submit" isLoading={roleForm.submitting} class="mr-3">
-          Update role
+          ອັບເດດບົດບາດ
         </Button>
         <Button
           color="danger"
@@ -151,7 +151,7 @@ export default () => {
           prefixIcon={<TrashIcon />}
           onClick={() => {
             confirm?.showConfirm(
-              "Are you sure you want to delete this item?",
+              "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
               {
                 onConfirm: async () => {},
               },
@@ -159,7 +159,7 @@ export default () => {
             );
           }}
         >
-          Delete
+          ລຶບ
         </Button>
       </div>
 

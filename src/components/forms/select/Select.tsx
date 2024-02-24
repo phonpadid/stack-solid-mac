@@ -66,7 +66,7 @@ export default (props: Props) => {
                       <Select.ItemText class="z-20">
                         {item().label}
                       </Select.ItemText>
-                      <Select.ItemIndicator class="absolute top-0 left-0 w-full h-full bg-primary-50 hover:bg-primary-100"></Select.ItemIndicator>
+                      <Select.ItemIndicator class="absolute top-0 left-0 w-full h-full bg-primary-50 hover:bg-primary-100 dark:opacity-10"></Select.ItemIndicator>
                     </Select.Item>
                   </a>
                 )}

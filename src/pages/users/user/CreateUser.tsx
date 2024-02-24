@@ -38,16 +38,16 @@ export default () => {
   return (
     <Form onSubmit={handleSubmit}>
       <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
-        Add new user
+        ເພີ່ມຜູ້ໃຊ້ໃໝ່
       </h2>
       <div class="grid gap-4 mb-4 sm:mb-8 md:grid-cols-2 md:gap-6">
         <Field name="image" type="File">
           {(field, props) => (
             <InputFile
-              label="Upload file"
+              label="ອັບໂຫລດໄຟລ໌"
               {...props}
               error={field.error}
-              helpMessage="SVG, PNG, JPG or GIF (MAX. 800x400px)."
+              helpMessage="SVG, PNG, JPG, Webp, ຫຼື GIF (MAX. 800x400px)."
               previewImage={
                 <Avatar
                   alt="preview"
@@ -68,11 +68,11 @@ export default () => {
           {(field, props) => (
             <InputText
               required
-              label="First Name"
+              label="ຊື່"
               {...props}
               value={field.value}
               error={field.error}
-              placeholder="First Name"
+              placeholder="ຊື່"
             />
           )}
         </Field>
@@ -80,11 +80,11 @@ export default () => {
           {(field, props) => (
             <InputText
               required
-              label="Last Name"
+              label="ນາມສະກຸນ"
               {...props}
               value={field.value}
               error={field.error}
-              placeholder="Last Name"
+              placeholder="ນາມສະກຸນ"
             />
           )}
         </Field>
@@ -93,7 +93,7 @@ export default () => {
           {(field, props) => (
             <InputText
               required
-              label="Email"
+              label="ອີເມວ"
               {...props}
               value={field.value}
               error={field.error}
@@ -107,11 +107,11 @@ export default () => {
               onValueChange={({ value }) => {
                 setValue(userForm, "emailStatus", value);
               }}
-              label="Email Status"
+              label="ສະຖານະອີເມວ"
               name={props.name}
               items={[
-                { label: "Not Verified", value: "not-verified" },
-                { label: "Verified", value: "verified" },
+                { label: "ບໍ່​ມີ​ການ​ຍືນ​ຍັນ", value: "not-verified" },
+                { label: "ຢັ້ງຢືນແລ້ວ", value: "verified" },
               ]}
               error={field.error}
               value={field.value}
@@ -123,13 +123,13 @@ export default () => {
           <Field name="roles" type="string[]">
             {(field, props) => (
               <Select
-                placeholder="Select Roles"
+                placeholder="ເລືອກບົດບາດ"
                 contentClass="w-44"
                 multiple
                 onValueChange={({ value }) => {
                   setValue(userForm, "roles", value);
                 }}
-                label="User Role"
+                label="ບົດບາດຜູ້ໃຊ້"
                 name={props.name}
                 items={[
                   { label: "Admin", value: "1" },
@@ -147,7 +147,7 @@ export default () => {
           {(field, props) => (
             <PasswordInput
               required
-              label="Password"
+              label="ລະຫັດຜ່ານ"
               {...props}
               value={field.value}
               error={field.error}
@@ -159,7 +159,7 @@ export default () => {
           {(field, props) => (
             <PasswordInput
               required
-              label="Confirm password"
+              label="ຢືນ​ຢັນ​ລະ​ຫັດ"
               {...props}
               value={field.value}
               error={field.error}
@@ -170,7 +170,7 @@ export default () => {
       </div>
 
       <Button type="submit" isLoading={userForm.submitting}>
-        Add user
+        ເພີ່ມຜູ້ໃຊ້
       </Button>
     </Form>
   );

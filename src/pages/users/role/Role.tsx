@@ -9,8 +9,6 @@ import getRoleApi from "./api/get-role.api";
 import { RoleResponse, RoleTableState } from "./api/role.interface";
 
 export default () => {
-  const [createUserModal, setCreateUserModal] = createSignal<boolean>(false);
-
   const navigate = useNavigate();
   const confirm = useConfirm();
 
@@ -25,7 +23,9 @@ export default () => {
     <Table
       header={
         <div class="flex flex-col items-start justify-between p-4 sm:flex-row sm:items-center">
-          <h5 class="font-semibold mb-2 sm:mb-0">All roles</h5>
+          <h2 class="text-lg font-semibold mb-2 sm:mb-0 dark:text-white">
+            ບົດບາດທັງຫມົດ
+          </h2>
           <Button
             class="w-full sm:w-fit"
             prefixIcon={<PlusIcon class="h-3.5 w-3.5" />}
@@ -33,7 +33,7 @@ export default () => {
               navigate("create");
             }}
           >
-            Add role
+            ເພີ່ມບົດບາດ
           </Button>
         </div>
       }
@@ -49,33 +49,33 @@ export default () => {
     >
       {[
         {
-          header: "name",
+          header: "ຊື່",
           body: ({ name }: RoleResponse) => name,
         },
         {
-          header: "description",
+          header: "ຄຳອະທິບາຍ",
           body: ({ description }: RoleResponse) => description,
         },
         {
-          header: "permissions",
+          header: "ການອະນຸຍາດ",
           body: ({ permissions }: RoleResponse) =>
             permissions.map((val) => val.name),
         },
         {
-          header: "action",
+          header: "ຈັດການ",
           body: ({ id }: RoleResponse) => (
             <div class="flex items-center px-6 py-4">
               <A
-                href={`users/roles/edit/${id}`}
+                href={`edit/${id}`}
                 class="font-medium text-primary-600 dark:text-primary-500 hover:underline"
               >
-                Edit
+                ແກ້ໄຂ
               </A>
               <a
                 href="#"
                 onClick={() => {
                   confirm?.showConfirm(
-                    "Are you sure you want to delete this item?",
+                    "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
                     {
                       onConfirm: async () => {},
                     },
@@ -84,7 +84,7 @@ export default () => {
                 }}
                 class="font-medium text-red-600 dark:text-red-500 hover:underline ms-3"
               >
-                Remove
+                ລຶບ
               </a>
             </div>
           ),
