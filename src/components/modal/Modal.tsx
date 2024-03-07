@@ -13,7 +13,7 @@ interface DialogProps extends ParentProps<DialogRootProps> {
 export default (props: DialogProps) => {
   return (
     <Dialog.Root {...props} lazyMount unmountOnExit>
-      <Portal>
+      <Portal mount={document.getElementById("root") as HTMLElement}>
         <Dialog.Backdrop class="modal-backdrop" />
         <Dialog.Positioner class="modal">
           <div class={`modal-container modal-${props.size || "md"}`}>

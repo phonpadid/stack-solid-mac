@@ -1,14 +1,18 @@
-import { IPaginated } from "../../../../common/interface/pagination";
-
-export interface PermissionResponse {
-  group_name: string;
-  items: {
-    id: number;
-    name: string;
-    description: string;
-  }[];
+export interface ConvertedPermission {
+  label: string;
+  value: string;
+  description: string;
 }
 
-export interface PermissionsResponse extends IPaginated {
-  permissions: PermissionResponse[];
+export interface GroupedPermission {
+  group: string;
+  items: ConvertedPermission[];
+}
+
+export interface PermissionResponse {
+  id: number;
+  name: string;
+  description: string;
+  group_name: string;
+  created_at: string;
 }

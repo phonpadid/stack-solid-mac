@@ -1,70 +1,114 @@
 import { useNavigate } from "@solidjs/router";
-import { createResource, createSignal } from "solid-js";
+import { format } from "date-fns";
+import { For, Show, createResource, createSignal } from "solid-js";
+import {
+  Permission,
+  PermissionGroup,
+} from "../../../common/enum/permission.enum";
+import checkPermission from "../../../common/utils/check-permission";
 import Avatar from "../../../components/avatar/Avatar";
 import Button from "../../../components/button/Button";
 import Dropdown from "../../../components/dropdown/Dropdown";
-import InputText from "../../../components/forms/input-text/InputText";
 import PlusIcon from "../../../components/icons/PlusIcon";
-import SearchIcon from "../../../components/icons/SearchIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
 import Table from "../../../components/table/Table";
+import { useAuth } from "../../../contexts/authentication/AuthContext";
 import { useConfirm } from "../../../contexts/confirm/ConfirmContext";
+import { useMessage } from "../../../contexts/message/MessageContext";
+import deleteUserApi from "./api/delete-user.api";
 import getUserApi from "./api/get-user.api";
 import { UserResponse, UserTableState } from "./api/user.interface";
 
 export default () => {
-  let typingTimeout: NodeJS.Timeout;
-
   const navigate = useNavigate();
-  const confirm = useConfirm();
+  const [, actionConfirm] = useConfirm();
+  const [, actionMessage] = useMessage();
+  const auth = useAuth();
+
+  if (!checkPermission(Permission.Read, PermissionGroup.User, auth.permissions))
+    navigate(-1);
 
   const [state, setState] = createSignal<UserTableState>({
     offset: 0,
     limit: 10,
-    search: "",
   });
 
-  const [users] = createResource(state, getUserApi);
+  const [users, { refetch }] = createResource(state, getUserApi);
 
-  const actionMenus = (id: string | number) => [
-    [
-      {
-        onClick() {
-          navigate(`/users/edit/${id}`);
-        },
-        label: "ແກ້ໄຂ",
-      },
-      {
+  const actionMenus = (id: number) => {
+    const menus: {
+      label: string;
+      onClick: () => void;
+    }[][] = [[]];
+
+    if (
+      checkPermission(Permission.Read, PermissionGroup.User, auth.permissions)
+    )
+      menus[0].push({
         onClick() {
           navigate(`/users/detail/${id}`);
         },
         label: "ລາຍລະອຽດ",
-      },
-    ],
-    [
-      {
+      });
+
+    if (
+      checkPermission(Permission.Write, PermissionGroup.User, auth.permissions)
+    )
+      menus[0].push({
         onClick() {
-          confirm?.showConfirm(
-            "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
-            {
-              onConfirm: async () => {},
+          navigate(`/users/edit/${id}`);
+        },
+        label: "ແກ້ໄຂ",
+      });
+
+    if (
+      checkPermission(Permission.Remove, PermissionGroup.User, auth.permissions)
+    ) {
+      menus.push([]);
+
+      menus[1].push({
+        onClick() {
+          actionConfirm.showConfirm({
+            icon: () => (
+              <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
+            ),
+            message: "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
+            onConfirm: async () => {
+              const res = await deleteUserApi(String(id));
+
+              actionMessage.showMessage({
+                level: "success",
+                message: res.data.message,
+              });
+
+              refetch();
             },
-            <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
-          );
+          });
         },
         label: "ລຶບ",
-      },
-    ],
-  ];
+      });
+    }
+
+    return menus;
+  };
 
   return (
     <Table
       header={
-        <>
-          <div class="flex flex-col items-start justify-between border-b dark:border-gray-600 p-4 sm:flex-row sm:items-center">
-            <h2 class="text-lg font-semibold mb-2 sm:mb-0 dark:text-white">
-              ຜູ້ໃຊ້ທັງໝົດ
-            </h2>
+        <div class="flex flex-col items-start justify-between border-b dark:border-gray-600 p-4 sm:flex-row sm:items-center">
+          <h2 class="text-lg font-semibold mb-2 sm:mb-0 dark:text-white">
+            ຜູ້ໃຊ້ທັງໝົດ
+          </h2>
+          <Show
+            when={
+              auth &&
+              checkPermission(
+                Permission.Write,
+                PermissionGroup.User,
+                auth.permissions
+              )
+            }
+          >
             <Button
               class="w-full sm:w-fit"
               prefixIcon={<PlusIcon class="h-3.5 w-3.5" />}
@@ -74,28 +118,11 @@ export default () => {
             >
               ເພີ່ມຜູ້ໃຊ້
             </Button>
-          </div>
-          <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-            <div class="w-full md:w-1/2">
-              <InputText
-                onInput={(e) => {
-                  clearTimeout(typingTimeout);
-
-                  typingTimeout = setTimeout(function () {
-                    setState((prev) => ({ ...prev, search: e.target.value }));
-                  }, 500);
-                }}
-                placeholder="ຄົ້ນຫາ"
-                prefixIcon={
-                  <SearchIcon class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                }
-              />
-            </div>
-          </div>
-        </>
+          </Show>
+        </div>
       }
       value={users}
-      responseField="users"
+      responseField="data"
       onChange={({ paginate }) => {
         setState((prev) => ({
           ...prev,
@@ -107,21 +134,32 @@ export default () => {
       {[
         {
           header: "ຜູ້ໃຊ້",
-          body: ({ image, firstName, lastName }: UserResponse) => (
+          body: ({
+            profile: { image, first_name, last_name },
+          }: UserResponse) => (
             <div class="flex items-center">
-              <Avatar src={image} alt="image" size="sm" class="mr-3" />
+              <Avatar
+                src={import.meta.env.VITE_BASE_API_URL + image}
+                alt="image"
+                size="sm"
+                class="mr-3"
+              />
               <span>
-                {firstName} {lastName}
+                {first_name} {last_name}
               </span>
             </div>
           ),
         },
         {
           header: "ບົດບາດ",
-          body: () => (
-            <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-              admin
-            </span>
+          body: ({ roles }: UserResponse) => (
+            <For each={roles}>
+              {({ name }) => (
+                <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                  {name}
+                </span>
+              )}
+            </For>
           ),
         },
         {
@@ -135,7 +173,10 @@ export default () => {
         },
         {
           header: "ເຂົ້າລະບົບລ່າສຸດ",
-          body: () => new Date().toDateString(),
+          body: ({ session }: UserResponse) =>
+            session
+              ? format(session.created_at, "dd-MM-y hh:mm:ss")
+              : "ບໍ່ມີການເຂົ້າສູ່ລະບົບ",
         },
         {
           body: ({ id }: UserResponse) => (

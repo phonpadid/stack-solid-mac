@@ -37,6 +37,7 @@
     "@solidjs/router": "^0.11.5",
     "axios": "^1.6.7",
     "babel-preset-solid": "^1.8.15",
+    "date-fns": "^3.3.1",
     "flowbite": "^2.3.0",
     "sass": "^1.71.0",
     "scss": "^0.2.4",

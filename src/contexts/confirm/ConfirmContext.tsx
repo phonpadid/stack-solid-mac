@@ -13,52 +13,43 @@ import Modal from "../../components/modal/Modal";
 type ConfirmContextState = {
   message?: string;
   isShow: boolean;
-  icon?: JSXElement;
-  actions: {
-    onConfirm: () => void | Promise<void>;
-    onCancel?: () => void;
-  };
+  icon?: () => JSXElement;
   isLoading: boolean;
+  onConfirm?: () => void | Promise<void>;
+  onCancel?: () => void;
 };
 
-type ConfirmContextValue = {
-  showConfirm: (
-    message: string,
-    actions: {
-      onConfirm: () => void | Promise<void>;
-      onCancel?: () => void;
-    },
-    icon?: JSXElement
-  ) => void;
-};
+type ConfirmContextValue = [
+  Omit<ConfirmContextState, "isLoading" | "isShow">,
+  {
+    showConfirm: (
+      state: Omit<ConfirmContextState, "isLoading" | "isShow">
+    ) => void;
+  }
+];
 
-const ConfirmContext = createContext<ConfirmContextValue>();
+const ConfirmContext = createContext<ConfirmContextValue>([
+  {},
+  { showConfirm: () => {} },
+]);
 
 export const ConfirmProvider: ParentComponent = (props: ParentProps) => {
   const [state, setState] = createStore<ConfirmContextState>({
     isShow: false,
-    actions: {
-      onConfirm: () => undefined,
-    },
     isLoading: false,
   });
 
-  const showConfirm = (
-    message: string,
-    actions: {
-      onConfirm: () => void;
-      onCancel?: () => void;
-    },
-    icon?: JSXElement
-  ) => {
-    setState("message", message);
-    setState("isShow", true);
-    setState("icon", icon);
-    setState("actions", actions);
-  };
-
   return (
-    <ConfirmContext.Provider value={{ showConfirm }}>
+    <ConfirmContext.Provider
+      value={[
+        { icon: state.icon, message: state.message },
+        {
+          showConfirm: ({ icon, message, onCancel, onConfirm }) => {
+            setState({ icon, message, isShow: true, onCancel, onConfirm });
+          },
+        },
+      ]}
+    >
       {props.children}
       <Modal
         open={state.isShow}
@@ -66,7 +57,7 @@ export const ConfirmProvider: ParentComponent = (props: ParentProps) => {
         close
       >
         <div class="p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-          <Show when={state.icon}>{state.icon}</Show>
+          <Show when={state.icon}>{(icon) => icon()()}</Show>
 
           <p class="mb-4 text-gray-500 dark:text-gray-300">{state.message}</p>
 
@@ -74,7 +65,7 @@ export const ConfirmProvider: ParentComponent = (props: ParentProps) => {
             <Button
               color="secondary"
               onClick={() => {
-                if (state.actions.onCancel) state.actions.onCancel();
+                if (state.onCancel) state.onCancel();
                 setState("isShow", false);
               }}
             >
@@ -84,13 +75,15 @@ export const ConfirmProvider: ParentComponent = (props: ParentProps) => {
               color="danger"
               isLoading={state.isLoading}
               onClick={async () => {
-                setState("isLoading", true);
-
-                await state.actions.onConfirm();
-
-                setState("isLoading", false);
-
-                setState("isShow", false);
+                if (state.onConfirm) {
+                  setState("isLoading", true);
+                  try {
+                    await state.onConfirm();
+                  } finally {
+                    setState("isLoading", false);
+                    setState("isShow", false);
+                  }
+                }
               }}
             >
               ແມ່ນແລ້ວ, ຂ້ອຍແນ່ໃຈ

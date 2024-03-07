@@ -1,19 +1,33 @@
 import { useNavigate, useParams } from "@solidjs/router";
-import { Show, createResource, createSignal } from "solid-js";
+import { format } from "date-fns";
+import { For, Show, createResource, createSignal } from "solid-js";
 import { Transition } from "solid-transition-group";
+import {
+  Permission,
+  PermissionGroup,
+} from "../../../common/enum/permission.enum";
+import checkPermission from "../../../common/utils/check-permission";
 import Avatar from "../../../components/avatar/Avatar";
 import Button from "../../../components/button/Button";
 import EditIcon from "../../../components/icons/EditIcon";
 import LoadingIcon from "../../../components/icons/LoadingIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
+import { useAuth } from "../../../contexts/authentication/AuthContext";
 import { useConfirm } from "../../../contexts/confirm/ConfirmContext";
+import { useMessage } from "../../../contexts/message/MessageContext";
 import { fadeIn, fadeOut } from "../../../utils/transition-animation";
+import deleteUserApi from "./api/delete-user.api";
 import getUserDetailApi from "./api/get-user-detail.api";
 
 export default () => {
   const param = useParams();
   const navigator = useNavigate();
-  const confirm = useConfirm();
+  const [, actionConfirm] = useConfirm();
+  const [, actionMessage] = useMessage();
+  const auth = useAuth();
+
+  if (!checkPermission(Permission.Read, PermissionGroup.User, auth.permissions))
+    navigator(-1);
 
   const [id] = createSignal<string>(param.id);
 
@@ -25,21 +39,33 @@ export default () => {
         <div class="sm:col-span-2">
           <div class="flex items-center">
             <Avatar
-              alt={`${user()?.data.firstName} ${user()?.data.lastName}`}
+              alt={`${user()?.data.profile.first_name} ${
+                user()?.data.profile.last_name
+              }`}
               size="xl"
-              src={user()?.data.image}
+              src={
+                import.meta.env.VITE_BASE_API_URL + user()?.data.profile.image
+              }
               isLoading={user.loading}
               class="mb-4 sm:mb-5"
             />
             <div class="ml-4">
               <h2 class="text-gray-900 leading-4 font-bold text-xl flex items-center mb-2 sm:text-2xl dark:text-white">
                 {user()
-                  ? `${user()?.data.firstName} ${user()?.data.lastName}`
+                  ? `${user()?.data.profile.first_name} ${
+                      user()?.data.profile.last_name
+                    }`
                   : "... ..."}
               </h2>
-              <span class="bg-primary-100 text-primary-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
-                Admin
-              </span>
+              <div class="flex items-center gap-2">
+                <For each={user()?.data.roles}>
+                  {({ name }) => (
+                    <span class="bg-primary-100 text-primary-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                      {name}
+                    </span>
+                  )}
+                </For>
+              </div>
             </div>
           </div>
         </div>
@@ -49,43 +75,80 @@ export default () => {
             ທີ່​ຢູ່​ອີ​ເມວ
           </dt>
           <dd class="text-gray-500 dark:text-gray-400 font-light mb-4 sm:mb-5">
-            {user() ? user()?.data.email : "..."}
+            <Show when={user()} fallback={"..."}>
+              {(user) => user().data.email}
+            </Show>
           </dd>
           <dt class="text-gray-900 dark:text-white leading-4 font-normal mb-2">
-            ສະຖານະອີເມວ
+            ເຂົ້າລະບົບລ່າສຸດ
           </dt>
           <dd class="text-gray-500 dark:text-gray-400 font-light mb-4 sm:mb-5">
-            ຢັ້ງຢືນແລ້ວ
+            <Show when={user()} fallback={"..."}>
+              {(val) => (
+                <Show
+                  when={val().data.session}
+                  fallback={"ບໍ່ມີການເຂົ້າສູ່ລະບົບ"}
+                >
+                  {(session) =>
+                    format(session().created_at, "dd-MM-y hh:mm:ss")
+                  }
+                </Show>
+              )}
+            </Show>
           </dd>
         </dl>
       </div>
 
       <div class="p-4 flex items-center">
-        <Button
-          class="mr-3"
-          color="primary"
-          prefixIcon={<EditIcon />}
-          onClick={() => {
-            navigator(`/users/edit/${param.id}`);
-          }}
+        <Show
+          when={checkPermission(
+            Permission.Write,
+            PermissionGroup.User,
+            auth.permissions
+          )}
         >
-          ແກ້ໄຂ
-        </Button>
-        <Button
-          color="danger"
-          prefixIcon={<TrashIcon />}
-          onClick={() => {
-            confirm?.showConfirm(
-              "Are you sure you want to delete this item?",
-              {
-                onConfirm: async () => {},
-              },
-              <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
-            );
-          }}
+          <Button
+            class="mr-3"
+            color="primary"
+            prefixIcon={<EditIcon />}
+            onClick={() => {
+              navigator(`/users/edit/${param.id}`);
+            }}
+          >
+            ແກ້ໄຂ
+          </Button>
+        </Show>
+
+        <Show
+          when={checkPermission(
+            Permission.Remove,
+            PermissionGroup.User,
+            auth.permissions
+          )}
         >
-          ລຶບ
-        </Button>
+          <Button
+            color="danger"
+            prefixIcon={<TrashIcon />}
+            onClick={() => {
+              actionConfirm.showConfirm({
+                icon: () => (
+                  <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
+                ),
+                message: "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
+                onConfirm: async () => {
+                  const res = await deleteUserApi(param.id);
+
+                  actionMessage.showMessage({
+                    level: "success",
+                    message: res.data.message,
+                  });
+                },
+              });
+            }}
+          >
+            ລຶບ
+          </Button>
+        </Show>
       </div>
 
       <Transition onEnter={fadeIn} onExit={fadeOut}>

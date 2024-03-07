@@ -4,7 +4,7 @@ import { UserTableState, UsersResponse } from "./user.interface";
 export default async (state: UserTableState) => {
   const { axios } = useAxios();
 
-  return axios.get<UsersResponse>("/users/search", {
-    params: { limit: state.limit, skip: state.offset, q: state.search },
+  return axios.get<UsersResponse>("/users", {
+    params: { limit: state.limit, skip: state.offset },
   });
 };

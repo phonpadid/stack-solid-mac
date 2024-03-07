@@ -1,21 +1,25 @@
-import { Input, maxLength, minLength, object, regex, string } from "valibot";
+import {
+  Input,
+  email,
+  maxLength,
+  minLength,
+  object,
+  regex,
+  string,
+} from "valibot";
 
 export const LoginSchema = object({
-  // email: string([
-  //   minLength(1, "Please enter your email."),
-  //   email("The email is badly formatted."),
-  //   maxLength(30, "Your email is too long."),
-  // ]),
-  username: string([
-    minLength(1, "Please enter your email."),
-    maxLength(30, "Your email is too long."),
+  email: string([
+    email("ອີເມວບໍ່ຖືກຕ້ອງ."),
+    minLength(1, "ກະລຸນາໃສ່ອີເມວຂອງທ່ານ."),
+    maxLength(30, "ອີເມວຂອງທ່ານຍາວເກີນໄປ."),
   ]),
   password: string([
-    minLength(6, "Your password is too short."),
-    maxLength(30, "Your password is too long."),
-    regex(/[a-z]/, "Your password must contain a lowercase letter."),
-    regex(/[A-Z]/, "Your password must contain a uppercase letter."),
-    regex(/[0-9]/, "Your password must contain a number."),
+    minLength(6, "ລະຫັດຜ່ານຂອງທ່ານສັ້ນເກີນໄປ."),
+    maxLength(30, "ລະຫັດຜ່ານຂອງທ່ານຍາວເກີນໄປ."),
+    regex(/[a-z]/, "ລະຫັດຜ່ານຂອງທ່ານຕ້ອງມີຕົວພິມນ້ອຍ."),
+    regex(/[A-Z]/, "ລະຫັດຜ່ານຂອງທ່ານຕ້ອງມີຕົວພິມໃຫຍ່."),
+    regex(/[0-9]/, "ລະຫັດຜ່ານຂອງທ່ານຕ້ອງມີຕົວເລກ."),
   ]),
 });
 

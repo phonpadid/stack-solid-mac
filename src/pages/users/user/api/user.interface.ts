@@ -1,20 +1,37 @@
-import { IOffsetBasePaginate, IPaginated } from "../../../../common/interface/pagination";
+import {
+  IOffsetBasePaginate,
+  IPaginated,
+} from "../../../../common/interface/pagination";
 
-export interface UserTableState extends IOffsetBasePaginate {
-  search: string;
-}
+export type UserTableState = IOffsetBasePaginate;
 
-export interface UserResponse {
+export type UserResponse = {
   id: number;
-  username: string;
   email: string;
-  phone: string;
-  firstName: string;
-  lastName: string;
-  gender: string;
-  image: string;
-}
+  created_at: string;
+  updated_at: string;
+  profile: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    image: string;
+    created_at: string;
+    updated_at: string;
+  };
+  roles: {
+    id: number;
+    name: string;
+    description: string;
+    is_default: boolean;
+    created_at: string;
+    updated_at: string;
+  }[];
+  session?: {
+    id: string;
+    created_at: string;
+  };
+};
 
 export interface UsersResponse extends IPaginated {
-  users: UserResponse[];
+  users: UserResponse;
 }

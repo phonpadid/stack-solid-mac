@@ -35,7 +35,7 @@ export default (props: AvatarProps) => {
             "w-20 h-20": props.size === "lg",
             "w-36 h-36": props.size === "xl",
           }}
-          src={props.src ? props.src : profilePlaceholder}
+          src={props.src && !props.isLoading ? props.src : profilePlaceholder}
           alt={props.alt}
         />
 

@@ -7,7 +7,7 @@ interface CheckboxProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export default (props: CheckboxProps) => {
-  const [, inputProps] = splitProps(props, ["value", "label"]);
+  const [, inputProps] = splitProps(props, ["label"]);
 
   return (
     <>

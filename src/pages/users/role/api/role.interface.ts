@@ -9,9 +9,17 @@ export interface RoleResponse {
   id: number;
   name: string;
   description: string;
-  permissions: { name: string }[];
+  created_at: string;
+  updated_at: string;
+  permissions: {
+    id: number;
+    name: string;
+    group_name: string;
+    description: string;
+    created_at: string;
+  }[];
 }
 
 export interface RolesResponse extends IPaginated {
-  roles: RoleResponse[];
+  data: Omit<RoleResponse, "permissions">[];
 }

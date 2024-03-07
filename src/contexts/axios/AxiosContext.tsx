@@ -31,6 +31,7 @@ export const AxiosProvider = (
 
         if (err.response.status >= 400 && err.response.status < 500) {
           if (err.response.status === 401) navigator("/login");
+
           actions.showMessage({
             level: "warning",
             message: checkErrorMessage,
@@ -42,10 +43,7 @@ export const AxiosProvider = (
           });
         }
 
-        props.onError(
-          checkErrorMessage,
-          err.response.data.errors ? err.response.data.errors : []
-        );
+        props.onError(checkErrorMessage, []);
       }
     }
   );

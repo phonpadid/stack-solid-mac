@@ -2,13 +2,19 @@ import {
   FormError,
   SubmitHandler,
   createForm,
+  reset,
   setValue,
   setValues,
   valiForm,
 } from "@modular-forms/solid";
-import { useParams } from "@solidjs/router";
-import { Show, createEffect, createResource, createSignal } from "solid-js";
+import { useNavigate, useParams } from "@solidjs/router";
+import { Show, createEffect, createResource, createSignal, on } from "solid-js";
 import { Transition } from "solid-transition-group";
+import {
+  Permission,
+  PermissionGroup,
+} from "../../../common/enum/permission.enum";
+import checkPermission from "../../../common/utils/check-permission";
 import Avatar from "../../../components/avatar/Avatar";
 import Button from "../../../components/button/Button";
 import InputFile from "../../../components/forms/input-file/InputFile";
@@ -17,45 +23,97 @@ import PasswordInput from "../../../components/forms/password-input/PasswordInpu
 import Select from "../../../components/forms/select/Select";
 import LoadingIcon from "../../../components/icons/LoadingIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
+import { useAuth } from "../../../contexts/authentication/AuthContext";
 import { useConfirm } from "../../../contexts/confirm/ConfirmContext";
+import { useMessage } from "../../../contexts/message/MessageContext";
 import { fadeIn, fadeOut } from "../../../utils/transition-animation";
+import getRoleApi from "../role/api/get-role.api";
+import { RoleTableState } from "../role/api/role.interface";
+import deleteUserApi from "./api/delete-user.api";
 import getUserDetailApi from "./api/get-user-detail.api";
-import { UserForm, UserSchema } from "./schemas/user.schema";
+import updateUserApi from "./api/update-user.api";
+import {
+  UpdateUserForm,
+  UpdateUserSchema,
+  UserForm,
+} from "./schemas/user.schema";
 
 export default () => {
   const param = useParams();
-  const confirm = useConfirm();
+  const [, actionConfirm] = useConfirm();
+  const [, actionMessage] = useMessage();
+  const navigator = useNavigate();
+  const auth = useAuth();
+
+  if (
+    !checkPermission(Permission.Write, PermissionGroup.User, auth.permissions)
+  )
+    navigator(-1);
 
   const [id] = createSignal<string>(param.id);
   const [user] = createResource(id, getUserDetailApi);
   const [previewImg, setPreviewImg] = createSignal<string>("");
 
-  const [userForm, { Form, Field }] = createForm<UserForm>({
-    validate: valiForm(UserSchema),
+  const [userForm, { Form, Field }] = createForm<UpdateUserForm>({
+    validate: valiForm(UpdateUserSchema),
     initialValues: {
-      emailStatus: ["not-verified"],
       roles: [],
     },
   });
 
+  const [roleState] = createSignal<RoleTableState>({
+    offset: undefined,
+    limit: undefined,
+  });
+  const [roles] = createResource(roleState, getRoleApi);
+  const [roleOptions, setRoleOptions] = createSignal<
+    { label: string; value: string }[]
+  >([]);
+
   createEffect(() => {
-    if (user.state === "ready") {
-      setValues(userForm, {
-        firstName: user().data.firstName,
-        lastName: user().data.lastName,
-      });
-      setPreviewImg(user().data.image);
+    if (roles.state === "ready") {
+      setRoleOptions(
+        roles().data.data.map((val) => ({
+          label: val.name,
+          value: String(val.id),
+        }))
+      );
     }
   });
 
-  const handleSubmit: SubmitHandler<UserForm> = async (values) => {
+  createEffect(
+    on(
+      () => user(),
+      (input) => {
+        if (input) {
+          setValues(userForm, {
+            firstName: input.data.profile.first_name,
+            lastName: input.data.profile.last_name,
+            email: input.data.email,
+            roles: input.data.roles.map((val) => String(val.id)),
+            password: undefined,
+            confirmPassword: undefined,
+          });
+          setPreviewImg(
+            import.meta.env.VITE_BASE_API_URL + input.data.profile.image
+          );
+        }
+      }
+    )
+  );
+
+  const handleSubmit: SubmitHandler<UpdateUserForm> = async (values) => {
     if (values.password !== values.confirmPassword) {
       throw new FormError<UserForm>({
-        confirmPassword: "password dose not match",
+        confirmPassword: "ລະຫັດຜ່ານບໍ່ກົງກັນ",
       });
     }
 
-    console.log(values);
+    const res = await updateUserApi(param.id, values);
+
+    actionMessage.showMessage({ level: "success", message: res.data.message });
+
+    navigator("/users/list", { resolve: false });
   };
 
   return (
@@ -80,8 +138,13 @@ export default () => {
                 />
               }
               onSelectFile={(files) => {
-                setPreviewImg(URL.createObjectURL(files[0]));
-                setValue(userForm, "image", files[0]);
+                if (files.length <= 0) {
+                  setPreviewImg("");
+                  reset(userForm, "image");
+                } else {
+                  setPreviewImg(URL.createObjectURL(files[0]));
+                  setValue(userForm, "image", files[0]);
+                }
               }}
             />
           )}
@@ -124,48 +187,24 @@ export default () => {
             />
           )}
         </Field>
-        <Field name="emailStatus" type="string[]">
+
+        <Field name="roles" type="string[]">
           {(field, props) => (
             <Select
+              placeholder="ເລືອກບົດບາດ"
               contentClass="w-44"
+              multiple
               onValueChange={({ value }) => {
-                setValue(userForm, "emailStatus", value);
+                setValue(userForm, "roles", value);
               }}
-              label="ສະຖານະອີເມວ"
+              label="ບົດບາດຜູ້ໃຊ້"
               name={props.name}
-              items={[
-                { label: "ບໍ່​ມີ​ການ​ຍືນ​ຍັນ", value: "not-verified" },
-                { label: "ຢັ້ງຢືນແລ້ວ", value: "verified" },
-              ]}
+              items={roleOptions()}
               error={field.error}
               value={field.value}
             ></Select>
           )}
         </Field>
-
-        <div class="sm:col-span-2">
-          <Field name="roles" type="string[]">
-            {(field, props) => (
-              <Select
-                placeholder="ເລືອກບົດບາດ"
-                contentClass="w-44"
-                multiple
-                onValueChange={({ value }) => {
-                  setValue(userForm, "roles", value);
-                }}
-                label="ບົດບາດຜູ້ໃຊ້"
-                name={props.name}
-                items={[
-                  { label: "Admin", value: "1" },
-                  { label: "Reader", value: "2" },
-                  { label: "Editor", value: "3" },
-                ]}
-                error={field.error}
-                value={field.value}
-              ></Select>
-            )}
-          </Field>
-        </div>
 
         <Field name="password">
           {(field, props) => (
@@ -179,6 +218,7 @@ export default () => {
             />
           )}
         </Field>
+
         <Field name="confirmPassword">
           {(field, props) => (
             <PasswordInput
@@ -204,13 +244,22 @@ export default () => {
           isLoading={userForm.submitting}
           prefixIcon={<TrashIcon />}
           onClick={() => {
-            confirm?.showConfirm(
-              "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
-              {
-                onConfirm: async () => {},
+            actionConfirm.showConfirm({
+              icon: () => (
+                <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
+              ),
+              message: "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
+              onConfirm: async () => {
+                const res = await deleteUserApi(param.id);
+
+                actionMessage.showMessage({
+                  level: "success",
+                  message: res.data.message,
+                });
+
+                navigator("/users/list", { resolve: false });
               },
-              <TrashIcon class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" />
-            );
+            });
           }}
         >
           ລຶບ

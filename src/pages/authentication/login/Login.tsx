@@ -18,8 +18,8 @@ export default () => {
   const [loginForm, { Form, Field }] = createForm<LoginForm>({
     validate: valiForm(LoginSchema),
     initialValues: {
-      username: "kminchelle",
-      password: "0lelplR",
+      email: "lkp95680383@gmail.com",
+      password: "Bird9249",
     },
   });
 
@@ -60,7 +60,7 @@ export default () => {
       </Show>
 
       <Form class="space-y-4 md:space-y-6" onSubmit={handlerSubmit}>
-        <Field name="username">
+        <Field name="email">
           {(field, props) => (
             <InputText
               {...props}

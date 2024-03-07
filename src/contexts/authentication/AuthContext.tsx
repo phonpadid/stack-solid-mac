@@ -1,62 +1,42 @@
 import {
   ParentComponent,
   ParentProps,
+  Show,
   createContext,
-  onMount,
+  createResource,
   useContext,
 } from "solid-js";
-import { SetStoreFunction, createStore } from "solid-js/store";
-import getAuthApi from "./get-auth.api";
+import LoadingIcon from "../../components/icons/LoadingIcon";
+import getAuthApi, { AuthResponseType } from "./get-auth.api";
 
-type AuthContextState = {
-  data?: {
-    id: number;
-    username: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    gender: string;
-    image: string;
-  };
-  loading: boolean;
-};
-
-type AuthContextValue = [
-  AuthContextState,
-  SetStoreFunction<AuthContextState> | undefined
-];
-
-const AuthContext = createContext<AuthContextValue>([
-  {
-    data: undefined,
-    loading: false,
-  },
-  undefined,
-]);
+const AuthContext = createContext<AuthResponseType>(undefined);
 
 export const AuthProvider: ParentComponent = (props: ParentProps) => {
-  const [auth, setAuth] = createStore<AuthContextState>({
-    data: undefined,
-    loading: false,
-  });
-
-  onMount(async () => {
-    setAuth("loading", true);
-
-    const res = await getAuthApi();
-
-    setAuth("data", res.data);
-
-    setAuth("loading", false);
-  });
+  const [auth] = createResource(getAuthApi);
 
   return (
-    <AuthContext.Provider value={[auth, setAuth]}>
-      {props.children}
-    </AuthContext.Provider>
+    <Show
+      when={auth()}
+      fallback={
+        <div class="w-screen h-screen text-gray-900 bg-gray-50 dark:text-white dark:bg-gray-900 ">
+          <div class="flex justify-center items-center h-full">
+            <div class="flex flex-col justify-center items-center">
+              <LoadingIcon class="animate-spin w-8 h-8 mb-3" />
+              ກຳລັງໂຫຼດ...
+            </div>
+          </div>
+        </div>
+      }
+    >
+      {(data) => (
+        <AuthContext.Provider value={data().data}>
+          {props.children}
+        </AuthContext.Provider>
+      )}
+  </Show>
   );
 };
 
 export function useAuth() {
-  return useContext(AuthContext);
+  return useContext(AuthContext) as AuthResponseType;
 }
